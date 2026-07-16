@@ -65,7 +65,7 @@ const BADGE_COLORS = [
 ];
 
 const DEFAULT_LINKS = [
-  { id: "l1", name: "MIDAP", url: "https://sanginides.midap.in/login_form.php", color: "bg-violet-600" },
+  // { id: "l1", name: "MIDAP", url: "https://sanginides.midap.in/login_form.php", color: "bg-violet-600" },
   { id: "l2", name: "Team Standup Doc", url: "https://notion.so", color: "bg-slate-600" },
 ];
 
@@ -78,7 +78,7 @@ const DEFAULT_LINKS = [
 // ---------------------------------------------------------------------------
 const USERS = [
   { username: "Shubhneet", password: "Shubh1001", name: "Shubhneet" },
-  { username: "john", password: "john123", name: "John" },
+  { username: "Tejasvi", password: "Tejasvi1001", name: "Tejasvi" },
   { username: "priya", password: "priya123", name: "Priya" },
 ];
 

@@ -46,17 +46,17 @@ function normalizeUrl(raw) {
 }
 
 const APPS = [
-  { id: "hr", name: "HR Portal", desc: "Leave, payslips & benefits", icon: "Users", color: "bg-blue-600", url: "https://www.bamboohr.com" },
-  { id: "helpdesk", name: "IT Helpdesk", desc: "Raise & track tickets", icon: "LifeBuoy", color: "bg-orange-500", url: "https://www.freshservice.com" },
-  { id: "finance", name: "Finance Hub", desc: "Expenses & invoices", icon: "Wallet", color: "bg-emerald-600", url: "https://quickbooks.intuit.com" },
+  // { id: "hr", name: "HR Portal", desc: "Leave, payslips & benefits", icon: "Users", color: "bg-blue-600", url: "https://www.bamboohr.com" },
+  // { id: "helpdesk", name: "IT Helpdesk", desc: "Raise & track tickets", icon: "LifeBuoy", color: "bg-orange-500", url: "https://www.freshservice.com" },
+  // { id: "finance", name: "Finance Hub", desc: "Expenses & invoices", icon: "Wallet", color: "bg-emerald-600", url: "https://quickbooks.intuit.com" },
   { id: "calendar", name: "Calendar", desc: "Meetings & schedules", icon: "CalendarDays", color: "bg-rose-500", url: "https://calendar.google.com" },
   { id: "mail", name: "Mail", desc: "Company email", icon: "Mail", color: "bg-sky-500", url: "https://mail.google.com" },
   { id: "drive", name: "Document Vault", desc: "Files & policies", icon: "FolderOpen", color: "bg-amber-500", url: "https://drive.google.com" },
   { id: "learning", name: "Learning Hub", desc: "Courses & training", icon: "GraduationCap", color: "bg-violet-600", url: "https://www.coursera.org" },
-  { id: "directory", name: "Directory", desc: "Find people & teams", icon: "Building2", color: "bg-cyan-600", url: "https://www.workday.com" },
-  { id: "projects", name: "Projects", desc: "Track team work", icon: "ClipboardList", color: "bg-indigo-600", url: "https://asana.com" },
-  { id: "wiki", name: "Knowledge Base", desc: "Guides & handbooks", icon: "BookOpen", color: "bg-teal-600", url: "https://www.notion.so" },
-  { id: "careers", name: "Careers", desc: "Internal openings", icon: "Briefcase", color: "bg-fuchsia-600", url: "https://www.linkedin.com/jobs" },
+  // { id: "directory", name: "Directory", desc: "Find people & teams", icon: "Building2", color: "bg-cyan-600", url: "https://www.workday.com" },
+  // { id: "projects", name: "Projects", desc: "Track team work", icon: "ClipboardList", color: "bg-indigo-600", url: "https://asana.com" },
+  // { id: "wiki", name: "Knowledge Base", desc: "Guides & handbooks", icon: "BookOpen", color: "bg-teal-600", url: "https://www.notion.so" },
+  // { id: "careers", name: "Careers", desc: "Internal openings", icon: "Briefcase", color: "bg-fuchsia-600", url: "https://www.linkedin.com/jobs" },
 ];
 
 const BADGE_COLORS = [
@@ -66,7 +66,7 @@ const BADGE_COLORS = [
 
 const DEFAULT_LINKS = [
   // { id: "l1", name: "MIDAP", url: "https://sanginides.midap.in/login_form.php", color: "bg-violet-600" },
-  { id: "l2", name: "Team Standup Doc", url: "https://notion.so", color: "bg-slate-600" },
+  // { id: "l2", name: "Team Standup Doc", url: "https://notion.so", color: "bg-slate-600" },
 ];
 
 // ---------------------------------------------------------------------------

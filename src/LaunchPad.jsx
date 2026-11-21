@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { supabase } from "./supabaseClient";
 import {
   Search, Moon, Sun, LogOut, Plus, Pencil, Trash2, ChevronDown,
   Users, LifeBuoy, Wallet, CalendarDays, Mail, FolderOpen, BookOpen,
@@ -723,17 +724,70 @@ function AppModal({ dark, initial, onClose, onSave }) {
 function Dashboard({ username, userName, dark, setDark, onLogout }) {
   const storageKey = `launchpad_links_${username}`;
   const [search, setSearch] = useState("");
-  const [links, setLinks] = useState(() => {
-    const saved = storageGet(storageKey);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        /* fall through to defaults */
+  const [links, setLinks] = useState(DEFAULT_LINKS);
+  const [linksLoading, setLinksLoading] = useState(true);
+  const [linksError, setLinksError] = useState("");
+
+  // Load this user's links from Supabase (table: launchpad_links).
+  // Runs every time the user logs in, on any browser/device.
+  useEffect(() => {
+    let cancelled = false;
+    async function loadLinks() {
+      setLinksLoading(true);
+      setLinksError("");
+      const { data, error } = await supabase
+        .from("launchpad_links")
+        .select("id, name, url, color")
+        .eq("username", username)
+        .order("created_at", { ascending: true });
+
+      if (cancelled) return;
+      if (error) {
+        setLinksError("Could not load your links. Check your internet and refresh.");
+        setLinksLoading(false);
+        return;
+      }
+
+      let rows = data || [];
+
+      // One-time migration: if the database has nothing yet but this browser
+      // still has links in localStorage, upload them so nothing is lost.
+      if (rows.length === 0) {
+        const old = storageGet(storageKey);
+        if (old) {
+          try {
+            const oldLinks = JSON.parse(old);
+            if (Array.isArray(oldLinks) && oldLinks.length > 0) {
+              const payload = oldLinks.map((l) => ({
+                id: l.id,
+                username,
+                name: l.name,
+                url: l.url,
+                color: l.color,
+              }));
+              const { error: upErr } = await supabase.from("launchpad_links").upsert(payload);
+              if (!upErr) {
+                rows = oldLinks;
+                storageRemove(storageKey);
+              }
+            }
+          } catch (e) {
+            /* ignore bad old data */
+          }
+        }
+      }
+
+      if (!cancelled) {
+        setLinks(rows);
+        setLinksLoading(false);
       }
     }
-    return DEFAULT_LINKS;
-  });
+    loadLinks();
+    return () => {
+      cancelled = true;
+    };
+  }, [username, storageKey]);
+
   // Company Applications are shared (not per-user) — one saved list that
   // everyone who opens this app on this browser/host sees and can edit.
   const [apps, setApps] = useState(() => {
@@ -755,22 +809,38 @@ function Dashboard({ username, userName, dark, setDark, onLogout }) {
   const filteredApps = apps.filter((a) => a.name.toLowerCase().includes(q));
   const filteredLinks = links.filter((l) => l.name.toLowerCase().includes(q));
 
-  const saveLink = (link) => {
+  const saveLink = async (link) => {
+    const { error } = await supabase.from("launchpad_links").upsert({
+      id: link.id,
+      username,
+      name: link.name,
+      url: link.url,
+      color: link.color,
+    });
+    if (error) {
+      setLinksError("Could not save the link. Please try again.");
+      return;
+    }
+    setLinksError("");
     setLinks((prev) => {
       const exists = prev.some((l) => l.id === link.id);
-      const next = exists ? prev.map((l) => (l.id === link.id ? link : l)) : [...prev, link];
-      storageSet(storageKey, JSON.stringify(next));
-      return next;
+      return exists ? prev.map((l) => (l.id === link.id ? link : l)) : [...prev, link];
     });
     setModal(null);
   };
 
-  const deleteLink = (id) => {
-    setLinks((prev) => {
-      const next = prev.filter((l) => l.id !== id);
-      storageSet(storageKey, JSON.stringify(next));
-      return next;
-    });
+  const deleteLink = async (id) => {
+    const { error } = await supabase
+      .from("launchpad_links")
+      .delete()
+      .eq("id", id)
+      .eq("username", username);
+    if (error) {
+      setLinksError("Could not delete the link. Please try again.");
+      return;
+    }
+    setLinksError("");
+    setLinks((prev) => prev.filter((l) => l.id !== id));
   };
 
   const saveApp = (app) => {
@@ -913,6 +983,12 @@ function Dashboard({ username, userName, dark, setDark, onLogout }) {
         {/* My Links */}
         <section>
           <h2 className={`mb-4 text-xs font-semibold uppercase tracking-wide ${subColor}`}>My Links</h2>
+          {linksError && (
+            <p className="mb-3 rounded-lg bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-500">
+              {linksError}
+            </p>
+          )}
+          {linksLoading && <p className={`mb-3 text-sm ${subColor}`}>Loading your links...</p>}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filteredLinks.map((link, i) => (
               <MyLinkCard
@@ -924,7 +1000,7 @@ function Dashboard({ username, userName, dark, setDark, onLogout }) {
                 onDelete={deleteLink}
               />
             ))}
-            {q === "" && <AddLinkCard dark={dark} delay={filteredLinks.length * 35} onClick={() => setModal("new")} />}
+            {q === "" && !linksLoading && <AddLinkCard dark={dark} delay={filteredLinks.length * 35} onClick={() => setModal("new")} />}
           </div>
           {q !== "" && filteredLinks.length === 0 && <EmptyState dark={dark} text="No links match your search" />}
         </section>

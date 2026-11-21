@@ -80,6 +80,7 @@ const USERS = [
   { username: "Shubhneet", password: "Shubh1001", name: "Shubhneet" },
   { username: "Tejasvi", password: "Tejasvi1001", name: "Tejasvi" },
   { username: "priya", password: "priya123", name: "Priya" },
+   { username: "Ratti", password: "Ratti123", name: "Ratti" },
 ];
 
 // ---------------------------------------------------------------------------
